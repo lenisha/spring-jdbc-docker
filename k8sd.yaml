@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: java-app
+  name: java-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: java-app
+    spec:
+      containers:
+      - image: lenisha/spring-jdbc-docker
+        name: spring-jdbc-docker
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+          - name: SQL_URL
+            value: jdbc:sqlserver://testmetoday.database.windows.net:1433;database=testae;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+          - name: SQL_USER
+            value: todayadmin@testmetoday
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sqlpass
+                key: SQL_PASS
+          - name: CATALINA_OPTS
+            value: -XX:+UseParNewGC -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+                -XX:+UseConcMarkSweepGC  -XX:+ForceTimeHighResolution -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCTimeStamps
+                -Dnetworkaddress.cache.ttl=0 -Djava.io.tmpdir=${CATALINA_BASE}/temp
+                -XX:+CMSParallelRemarkEnabled -Xrs -XX:+PrintHeapAtGC -XX:+HeapDumpOnOutOfMemoryError
+                -Xloggc:${CATALINA_BASE}/logs/gcnormal.log -XX:+UseCMSInitiatingOccupancyOnly
+                -XX:MaxNewSize=1536m -Djava.rmi.server.useLocalHostname=true 
+                -XX:MaxMetaspaceSize=1024M -XX:+PrintGCDetails -Xrunjdwp:transport=dt_socket,address=9081,server=y,suspend=n
+                -XX:CMSInitiatingOccupancyFraction=60 -Dsun.rmi.dgc.client.gcInterval=600000
+                -Xss1m -Dwrapper.dump.port=-1 -Djava.endorsed.dirs=${CATALINA_HOME}/endorsed
+                -Dcatalina.home=${CATALINA_HOME} -XX:+CMSClassUnloadingEnabled -XX:NewSize=1536m
+                -XX:+DisableExplicitGC -XX:+PrintGCApplicationStoppedTime -Desolutions.messaging.jms.system.name=${HOSTNAME}
+                -XX:+CMSPermGenSweepingEnabled -Dderby.system.home=${CATALINA_HOME}/derbydb
+                -server -Dsun.net.inetaddr.ttl=0 -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.server.gcInterval=600000
+                -Xdebug -XX:HeapDumpPath=${CATALINA_BASE}/logs -Djavax.xml.soap.SOAPFactory=org.apache.axis.soap.SOAPFactoryImpl
+                -Djavax.xml.soap.MessageFactory=org.apache.axis.soap.MessageFactoryImpl  -XX:+UnlockExperimentalVMOptions
+                -XX:+UseCGroupMemoryLimitForHeap -Dfile.encoding=UTF-8
+          - name: JAVA_OPTS
+            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD} -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+        resources:
+         limits:
+           cpu: "2"
+           memory: 3G
+         requests:
+           cpu: "1"
+           memory: 3G
+        readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /spring-jdbc-docker/create-user.html
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 120
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 3
+        livenessProbe:
+            failureThreshold: 1
+            httpGet:
+              path: /spring-jdbc-docker/create-user.html
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 120
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 16       
+status: {}
