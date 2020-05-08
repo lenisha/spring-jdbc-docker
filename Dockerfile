@@ -47,6 +47,7 @@ EXPOSE 8080
 
 COPY startup.sh /opt/startup.sh
 COPY target/spring-jdbc-docker/WEB-INF/lib/mssql-jdbc-7.4.1.jre8.jar /opt/apache-tomcat-7.0.59/lib/mssql-jdbc-7.4.1.jre8.jar
+#ADD logging.properties server.xml $CATALINA_HOME/conf/
 
 WORKDIR $CATALINA_HOME
 

@@ -35,7 +35,7 @@ spec:
                 name: sqlpass
                 key: SQL_PASS
           - name: CATALINA_OPTS
-            value: -XX:+UseParNewGC -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+            value: -XX:+UseParNewGC -Xmx2560m -Xms2560m -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
                 -XX:+UseConcMarkSweepGC  -XX:+ForceTimeHighResolution -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCTimeStamps
                 -Dnetworkaddress.cache.ttl=0 -Djava.io.tmpdir=${CATALINA_BASE}/temp
                 -XX:+CMSParallelRemarkEnabled -Xrs -XX:+PrintHeapAtGC -XX:+HeapDumpOnOutOfMemoryError
@@ -52,7 +52,7 @@ spec:
                 -Djavax.xml.soap.MessageFactory=org.apache.axis.soap.MessageFactoryImpl  -XX:+UnlockExperimentalVMOptions
                 -XX:+UseCGroupMemoryLimitForHeap -Dfile.encoding=UTF-8
           - name: JAVA_OPTS
-            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD} -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD} -XX:+PrintFlagsFinal -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
         resources:
          limits:
            cpu: "2"
