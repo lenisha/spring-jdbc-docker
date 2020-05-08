@@ -1,4 +1,4 @@
-# Spring/Hibernate App on Azure AppService (Tomcat) using JNDI to access SQL Server on Azure  
+# Spring/Hibernate App on Azure AKS (Tomcat) using JNDI to access SQL Server on Azure  
 
 Code for the article posted on dzone: https://dzone.com/articles/migrating-java-applications-to-azure-app-service-p
 
@@ -27,4 +27,15 @@ export SQL_PASSWORD=xxx
 export SQL_USER=todayadmin@testmetoday
 export JAVA_OPTS="-DSQL_URL='$SQL_URL' -DSQL_USER=$SQL_USER -DSQL_PASSWORD=$SQL_PASSWORD"
 
+```
+
+# K8S
+
+```
+kubectl create secret generic sqlpass --from-literal=SQL_PASS=xxxx
+kubectl apply -f 
+```
+
+```
+curl http://51.143.109.195/spring-jdbc-docker/users.html
 ```
