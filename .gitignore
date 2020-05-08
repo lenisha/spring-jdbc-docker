@@ -3,3 +3,4 @@ target/
 .vscode/
 .sts4-cache
 .idea/
+*.logs

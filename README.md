@@ -18,6 +18,9 @@ There are few options to configure JNDI for the web application running undet To
 ```
 mvn package -DskipTests
 docker build -t spring-jdbc-docker .
+docker tag spring-jdbc-docker lenisha/spring-jdbc-docker
+docker push lenisha/spring-jdbc-docker
+
 docker run --rm -it -p 8080:8080 -e JAVA_OPTS="$JAVA_OPTS"  spring-jdbc-docker
 ```
 
@@ -38,4 +41,19 @@ kubectl apply -f
 
 ```
 curl http://51.143.109.195/spring-jdbc-docker/users.html
+```
+
+# LOAD TEST
+
+```
+az container create -g jogardn-aks -n loadtestspringget --location westus --image lenisha/loadtest-spring:latest --restart-policy Never -e SERVICE_ENDPOINT=http://51.143.109.195/spring-jdbc-docker/users.html
+
+az container logs -g jogardn-aks -n loadtestspringget
+az container delete -g jogardn-aks -n loadtestspringget
+
+az container create -g jogardn-aks -n loadtestspringpost --location westus --image lenisha/loadtest-spring:latest --restart-policy Never -e SERVICE_ENDPOINT=http://51.143.109.195/spring-jdbc-docker/create-user.html --command-line '/app/loadtest-post.sh'
+
+
+az container logs -g jogardn-aks -n loadtestspringpost
+az container delete -g jogardn-aks -n loadtestspringpost
 ```
