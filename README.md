@@ -44,6 +44,7 @@ curl http://51.143.109.195/spring-jdbc-docker/users.html
 ```
 
 # LOAD TEST
+Load testing done using utility `hey` and docker image with script running as ACI group in a different region.
 
 ```
 az container create -g jogardn-aks -n loadtestspringget --location westus --image lenisha/loadtest-spring:latest --restart-policy Never -e SERVICE_ENDPOINT=http://51.143.109.195/spring-jdbc-docker/users.html
@@ -56,4 +57,158 @@ az container create -g jogardn-aks -n loadtestspringpost --location westus --ima
 
 az container logs -g jogardn-aks -n loadtestspringpost
 az container delete -g jogardn-aks -n loadtestspringpost
+```
+
+With only one pod in replicaset Tomcat starts to queue up pretty quickly
+```
+Phase 3: Load test - 30 seconds, 1600 users.
+Details (average, fastest, slowest):
+  DNS+dialup:   0.7815 secs, 0.9255 secs, 20.0002 secs
+  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0000 secs
+  req write:    0.0002 secs, 0.0000 secs, 0.0092 secs
+  resp wait:    0.4542 secs, 0.0540 secs, 3.9736 secs
+  resp read:    0.0262 secs, 0.0000 secs, 0.3960 secs
+
+Status code distribution:
+  [200] 3050 responses
+
+Error distribution:
+  [988] Get "http://51.143.109.195/spring-jdbc-docker/users.html": context deadline exceeded (Client.Timeout exceeded while awaiting headers)      
+  [401] Get "http://51.143.109.195/spring-jdbc-docker/users.html": dial tcp 51.143.109.195:80: i/o timeout (Client.Timeout exceeded while awaiting 
+headers)
+
+Waiting 15 seconds for the cluster to stabilize
+\nPhase 4: Load test - 30 seconds, 3200 users.
+
+Summary:
+  Total:        49.6588 secs
+  Slowest:      20.0003 secs
+  Fastest:      0.8639 secs
+  Average:      10.3038 secs
+  Requests/sec: 156.9511
+
+
+Response time histogram:
+  0.864 [1]     |
+  2.778 [205]   |■■■■■■■■■■■■■■■■■■■
+  4.691 [367]   |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  6.605 [348]   |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  8.518 [346]   |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  10.432 [187]  |■■■■■■■■■■■■■■■■■■
+  12.346 [247]  |■■■■■■■■■■■■■■■■■■■■■■■
+  14.259 [275]  |■■■■■■■■■■■■■■■■■■■■■■■■■■
+  16.173 [133]  |■■■■■■■■■■■■■
+  18.087 [185]  |■■■■■■■■■■■■■■■■■■
+  20.000 [421]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+
+Latency distribution:
+  10% in 3.1229 secs
+  25% in 5.0198 secs
+  50% in 9.4596 secs
+  75% in 15.3072 secs
+  90% in 19.1711 secs
+  95% in 19.7091 secs
+  99% in 19.9749 secs
+```
+
+
+With 20 pods timeouts start to happen later  with more load:
+
+```
+Waiting 15 seconds for the cluster to stabilize
+\nPhase 4: Load test - 30 seconds, 3200 users.
+
+Summary:
+  Total:        40.2460 secs
+  Slowest:      13.6339 secs
+  Fastest:      0.7814 secs
+  Average:      8.7992 secs
+  Requests/sec: 312.1556
+
+
+Response time histogram:
+  0.781 [1]     |
+  2.067 [375]   |■■
+  3.352 [248]   |■
+  4.637 [255]   |■■
+  5.922 [482]   |■■■
+  7.208 [490]   |■■■
+  8.493 [620]   |■■■■
+  9.778 [6686]  |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  11.063 [2728] |■■■■■■■■■■■■■■■■
+  12.349 [611]  |■■■■
+  13.634 [67]   |
+
+
+Latency distribution:
+  10% in 5.6709 secs
+  25% in 8.7648 secs
+  50% in 9.3146 secs
+  75% in 9.8826 secs
+  90% in 10.6724 secs
+  95% in 11.1127 secs
+  99% in 12.0760 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:   0.0438 secs, 0.7814 secs, 13.6339 secs
+  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0000 secs
+  req write:    0.0005 secs, 0.0000 secs, 0.0216 secs
+  resp wait:    2.9225 secs, 0.0252 secs, 9.8454 secs
+  resp read:    0.1482 secs, 0.0000 secs, 1.5621 secs
+
+Status code distribution:
+  [200] 12203 responses
+  [500] 360 responses
+
+
+
+Waiting 15 seconds for the cluster to stabilize
+\nPhase 5: Load test - 30 seconds, 6400 users.
+
+Summary:
+  Total:        49.8169 secs
+  Slowest:      20.0157 secs
+  Fastest:      0.0502 secs
+  Average:      13.8072 secs
+  Requests/sec: 335.8497
+
+
+Response time histogram:
+  0.050 [1]     |
+  2.047 [597]   |■■■■■
+  4.043 [440]   |■■■
+  6.040 [891]   |■■■■■■■
+  8.036 [840]   |■■■■■■■
+  10.033 [1222] |■■■■■■■■■■
+  12.029 [672]  |■■■■■
+  14.026 [763]  |■■■■■■
+  16.023 [641]  |■■■■■
+  18.019 [1792] |■■■■■■■■■■■■■■
+  20.016 [5101] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+
+Latency distribution:
+  10% in 4.5961 secs
+  25% in 8.6647 secs
+  50% in 16.3987 secs
+  75% in 19.2860 secs
+  90% in 19.6592 secs
+  95% in 19.8914 secs
+  99% in 20.0002 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:   0.6993 secs, 0.0502 secs, 20.0157 secs
+  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0000 secs
+  req write:    0.0024 secs, 0.0000 secs, 0.1609 secs
+  resp wait:    1.6802 secs, 0.0255 secs, 7.9628 secs
+  resp read:    0.2702 secs, 0.0000 secs, 5.3113 secs
+
+Status code distribution:
+  [200] 11368 responses
+  [500] 1592 responses
+
+Error distribution:
+  [2406]        Get "http://51.143.109.195/spring-jdbc-docker/users.html": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+  [1365]        Get "http://51.143.109.195/spring-jdbc-docker/users.html": dial tcp 51.143.109.195:80: i/o timeout (Client.Timeout exceeded while awaiting headers)
 ```
