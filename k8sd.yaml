@@ -26,7 +26,7 @@ spec:
           protocol: TCP
         env:
           - name: SQL_URL
-            value: jdbc:sqlserver://jogardn-sql-mi.9ec6e3297387.database.windows.net:1433;database=testpcc;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.9ec6e3297387.database.windows.net;loginTimeout=30;
+            value: jdbc:sqlserver://jogardn-sql-mi.9ec6e3297387.database.windows.net:1433;database=testpcc;encrypt=true;trustServerCertificate=true;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
           - name: SQL_USER
             value: jogardn
           - name: SQL_PASSWORD
@@ -34,10 +34,20 @@ spec:
               secretKeyRef:
                 name: sqlpass
                 key: SQL_PASS
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace   
+          - name: CATALINA_TMPDIR
+            value: /mnt/azure/${MY_POD_NAME}          
           - name: CATALINA_OPTS
-            value: -XX:+UseParNewGC -Xmx2560m -Xms2560m -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+            value: -XX:+UseParNewGC -Xmx3760m -Xms1750m -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
                    -XX:+UseConcMarkSweepGC -Djavax.xml.transform.TransformerFactory=com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl 
-                   -XX:+ForceTimeHighResolution -Dnetworkaddress.cache.ttl=0 -Djava.io.tmpdir=${CATALINA_BASE}/temp
+                   -XX:+ForceTimeHighResolution -Dnetworkaddress.cache.ttl=0 
                    -XX:+CMSParallelRemarkEnabled -Xrs -XX:+UseCMSInitiatingOccupancyOnly 
                    -XX:MaxNewSize=1536m -XX:MaxMetaspaceSize=1024M 
                    -Djavax.xml.soap.SOAPConnectionFactory=org.apache.axis.soap.SOAPConnectionFactoryImpl 
@@ -47,15 +57,15 @@ spec:
                    -Dderby.system.home=${CATALINA_HOME}/derbydb -server -Dsun.net.inetaddr.ttl=0 
                    -Djava.net.preferIPv4Stack=true -Djavax.xml.soap.SOAPFactory=org.apache.axis.soap.SOAPFactoryImpl 
                    -Djavax.xml.soap.MessageFactory=org.apache.axis.soap.MessageFactoryImpl -Dfile.encoding=UTF-8
-          - name: JAVA_OPTS
-            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD} -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+          - name: JAVA_OPTS # CMSClassUnloadingEnabled -Djava.io.tmpdir=${CATALINA_BASE}/temp
+            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD}   -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
         resources:
          limits:
            cpu: "2"
-           memory: 3G
+           memory: 4G
          requests:
            cpu: "1"
-           memory: 3G
+           memory: 2G
         readinessProbe:
             failureThreshold: 5
             httpGet:
@@ -75,5 +85,14 @@ spec:
             initialDelaySeconds: 120
             periodSeconds: 5
             successThreshold: 1
-            timeoutSeconds: 16       
+            timeoutSeconds: 16 
+        volumeMounts:
+        - mountPath: "/mnt/azure"
+          name: azure    
+      volumes:
+      - name: azure
+        azureFile:
+          secretName: azure-secret-file
+          shareName: aksfileshare
+          readOnly: false      
 status: {}

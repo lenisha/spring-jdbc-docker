@@ -7,7 +7,7 @@
 			url="${SQL_URL}"
 			username="${SQL_USER}"
 			password="${SQL_PASSWORD}" 
-			validationQuery="SELECT 1" 
+			validationQuery="SELECT 1"  validationQueryTimeout="50"
 			testOnBorrow="true" testWhileIdle="false" testOnReturn="false"
 			loginTimeout="30000" queryTimeout="120000" initSQL="SET NOCOUNT OFF"
 			removeAbandoned="true" removeAbandonedTimeout="3600"

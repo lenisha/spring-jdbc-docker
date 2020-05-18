@@ -47,9 +47,11 @@ curl http://51.143.109.195/spring-jdbc-docker/users.html
 Load testing done using utility `hey` and docker image with script running as ACI group in a different region.
 
 ```
-az container create -g jogardn-aks -n loadtestspringget --location westus --image lenisha/loadtest-spring:latest --restart-policy Never -e SERVICE_ENDPOINT=http://51.143.109.195/spring-jdbc-docker/users.html
+az container create -g jogardn-aks -n loadtestspringget --location westus --image lenisha/loadtest-spring:latest --restart-policy Always -e SERVICE_ENDPOINT=http://51.143.109.195/spring-jdbc-docker/users.html
 
 az container logs -g jogardn-aks -n loadtestspringget
+az container start -g jogardn-aks -n loadtestspringget
+
 az container delete -g jogardn-aks -n loadtestspringget
 
 az container create -g jogardn-aks -n loadtestspringpost --location westus --image lenisha/loadtest-spring:latest --restart-policy Never -e SERVICE_ENDPOINT=http://51.143.109.195/spring-jdbc-docker/create-user.html --command-line '/app/loadtest-post.sh'

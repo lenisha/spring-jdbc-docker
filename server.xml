@@ -42,7 +42,7 @@
                 changeLocalPort="false"
             />-->
             <Valve className="org.apache.catalina.valves.AccessLogValve"
-                directory="logs"
+                directory="/opt/tomcat/logs"
                 pattern="[access_log] %h %l %u %t %D (ms) &quot;%r&quot; &quot;%{WeToken}c&quot; %s %b Location:%{Location}o Referer:%{Referer}i"
                 prefix="access_log"
                 rotatable="false"
