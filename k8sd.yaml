@@ -24,6 +24,8 @@ spec:
         - containerPort: 8080
           name: http
           protocol: TCP
+        command: ["/bin/sh","-c"]
+        args: ["mkdir /mnt/azure/${MY_POD_NAME}; /opt/startup.sh"]  
         env:
           - name: SQL_URL
             value: jdbc:sqlserver://jogardn-sql-mi.9ec6e3297387.database.windows.net:1433;database=testpcc;encrypt=true;trustServerCertificate=true;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
