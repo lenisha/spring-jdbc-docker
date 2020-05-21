@@ -40,7 +40,7 @@ public class FaultyController {
              
              throw new RuntimeException("Fail me - do not close connection");
         } catch (SQLException ex) {
-
+            logger.info("INFO - FaultyController Exception caught " + ex.getMessage());
         }
 
         model.addAttribute("error", "error");

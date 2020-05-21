@@ -91,10 +91,33 @@ spec:
         volumeMounts:
         - mountPath: "/mnt/azure"
           name: azure    
+        #- mountPath: "/opt/apache-tomcat-7.0.59/webapps/spring-jdbc-docker/WEB-INF/classes/logging.properties"
+        #  name: log-config
+        #  subpath: logging.properties  
       volumes:
-      - name: azure
+      - name: azure #volume for jdbc logs
         azureFile:
           secretName: azure-secret-file
           shareName: aksfileshare
-          readOnly: false      
+          readOnly: false    
+      - name: log-config
+        configMap: 
+          name: log-config  
 status: {}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-config
+data:
+  logging.properties: |-
+    handlers=java.util.logging.FileHandler
+    level= OFF
+    java.util.logging.FileHandler.pattern=%t/jdbc%u.log
+    java.util.logging.FileHandler.limit=500000
+    java.util.logging.FileHandler.count=20
+    java.util.logging.FileHandler.formatter=java.util.logging.SimpleFormatter
+    java.util.logging.FileHandler.level=FINEST
+    #java.util.logging.ConsoleHandler.level=FINEST
+    com.microsoft.sqlserver.jdbc.level=FINEST
