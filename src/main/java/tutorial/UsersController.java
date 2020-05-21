@@ -28,6 +28,8 @@ public class UsersController {
 
         model.addAttribute("users", entityManager.createQuery("select u from User u").getResultList());
 
+
+        
         return "users";
     }
 

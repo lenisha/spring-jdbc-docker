@@ -28,7 +28,7 @@ spec:
         args: ["mkdir /mnt/azure/${MY_POD_NAME}; /opt/startup.sh"]  
         env:
           - name: SQL_URL
-            value: jdbc:sqlserver://jogardn-sql-mi.9ec6e3297387.database.windows.net:1433;database=testpcc;encrypt=true;trustServerCertificate=true;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+            value: jdbc:sqlserver://jogardn-sql-mi.9ec6e3297387.database.windows.net:1433;database=testpcc;responseBuffering=full;sendStringParametersAsUnicode=false;loginTimeout=30;
           - name: SQL_USER
             value: jogardn
           - name: SQL_PASSWORD
@@ -47,7 +47,7 @@ spec:
           - name: CATALINA_TMPDIR
             value: /mnt/azure/${MY_POD_NAME}          
           - name: CATALINA_OPTS
-            value: -XX:+UseParNewGC -Xmx3760m -Xms1750m -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+            value: -XX:+UseParNewGC -Xmx5420m -Xms5420m -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
                    -XX:+UseConcMarkSweepGC -Djavax.xml.transform.TransformerFactory=com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl 
                    -XX:+ForceTimeHighResolution -Dnetworkaddress.cache.ttl=0 
                    -XX:+CMSParallelRemarkEnabled -Xrs -XX:+UseCMSInitiatingOccupancyOnly 
@@ -63,11 +63,11 @@ spec:
             value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD}   -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
         resources:
          limits:
-           cpu: "2"
-           memory: 4G
+           cpu: "5"
+           memory: 8G
          requests:
-           cpu: "1"
-           memory: 2G
+           cpu: "3"
+           memory: 6G
         readinessProbe:
             failureThreshold: 5
             httpGet:
