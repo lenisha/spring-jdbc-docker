@@ -30,20 +30,33 @@ public class FaultyController {
 
         logger.info("INFO - FaultyController");
         
+        DataSource dataSource = null;
+        Connection conn = null; 
+        PreparedStatement stmt = null;
+        
         try { 
             EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) em.getEntityManagerFactory();
-            DataSource dataSource = info.getDataSource();
+            dataSource = info.getDataSource();
 
-             Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT 1");
-             stmt.executeQuery();
+            conn = dataSource.getConnection();
+            stmt = conn.prepareStatement("SELECT 1");
+            stmt.executeQuery();
              
-             throw new RuntimeException("Fail me - do not close connection");
+            throw new RuntimeException("Fail me - do not close connection");
         } catch (SQLException ex) {
             logger.info("INFO - FaultyController Exception caught " + ex.getMessage());
+            model.addAttribute("error", ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            try {
+                if ( stmt != null) stmt.close();
+                if ( conn != null ) conn.close();
+            } catch (Exception exf) {
+                logger.info("INFO - FaultyController Exception caught in close " + exf.getMessage());
+            }
         }
 
-        model.addAttribute("error", "error");
+        
         
         return "fault";
     }

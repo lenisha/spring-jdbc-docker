@@ -39,18 +39,27 @@ RUN curl -jkSL -o /tmp/apache-tomcat.tar.gz http://archive.apache.org/dist/tomca
     tar -C /opt -xf /tmp/apache-tomcat.tar && \
     ln -s /opt/apache-tomcat-$TOMCAT_VERSION $CATALINA_HOME
 
+
+WORKDIR $CATALINA_HOME
+
+# install AppDynamics agent
+COPY lib/AppServerAgent-20.4.0.29862.zip ./AppServerAgent-20.4.0.29862.zip 
+   
+RUN mkdir /opt/tomcat/appDynamics && \
+    unzip ./AppServerAgent-20.4.0.29862.zip -d /opt/tomcat/appDynamics && \
+    rm -f ./AppServerAgent-20.4.0.29862.zip
+
 # cleanup
 RUN apk del curl && \
     rm -rf /tmp/* /var/cache/apk/*
 
+# install Application
 EXPOSE 8080
 
 COPY config/startup.sh /opt/startup.sh
 COPY target/spring-jdbc-docker/WEB-INF/lib/mssql-jdbc-7.4.1.jre8.jar /opt/apache-tomcat-7.0.59/lib/mssql-jdbc-7.4.1.jre8.jar
 ADD  config/tomcat-users.xml config/server.xml $CATALINA_HOME/conf/
-#logging.properties
 
-WORKDIR $CATALINA_HOME
 
 ADD target/spring-jdbc-docker.war /opt/apache-tomcat-7.0.59/webapps/
 

@@ -47,7 +47,7 @@ spec:
           - name: CATALINA_TMPDIR
             value: /mnt/azure/${MY_POD_NAME}          
           - name: CATALINA_OPTS
-            value: -XX:+UseParNewGC -Xmx5420m -Xms5420m -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+            value: $APM -XX:+UseParNewGC -Xmx5420m -Xms5420m -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
                    -XX:+UseConcMarkSweepGC -Djavax.xml.transform.TransformerFactory=com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl 
                    -XX:+ForceTimeHighResolution -Dnetworkaddress.cache.ttl=0 
                    -XX:+CMSParallelRemarkEnabled -Xrs -XX:+UseCMSInitiatingOccupancyOnly 
@@ -60,7 +60,30 @@ spec:
                    -Djava.net.preferIPv4Stack=true -Djavax.xml.soap.SOAPFactory=org.apache.axis.soap.SOAPFactoryImpl 
                    -Djavax.xml.soap.MessageFactory=org.apache.axis.soap.MessageFactoryImpl -Dfile.encoding=UTF-8
           - name: JAVA_OPTS # CMSClassUnloadingEnabled -Djava.io.tmpdir=${CATALINA_BASE}/temp
-            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD}   -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD} -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+          - name: APM
+            value: -javaagent:/opt/tomcat/appDynamics/javaagent.jar -Dappdynamics.agent.reuse.nodeName.prefix=Tomcat -Dappdynamics.agent.reuse.nodeName=true
+          - name: APPDYNAMICS_CONTROLLER_HOST_NAME
+            value: dangerous202005211037445.saas.appdynamics.com
+          - name: APPDYNAMICS_AGENT_APPLICATION_NAME
+            value: pcc-test
+          - name: APPDYNAMICS_AGENT_TIER_NAME
+            value: Tomcat
+          - name: APPDYNAMICS_AGENT_ACCOUNT_NAME
+            value: dangerous202005211037445
+          - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: appdynamicspass
+                key: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+          - name: APPDYNAMICS_CONTROLLER_PORT
+            value: "443"
+          - name: APPDYNAMICS_CONTROLLER_SSL_ENABLED
+            value: "true"
+          #- name: APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME
+          #  value: "true"
+          #- name: APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME_PREFIX
+          #  value: pcc-web-main
         resources:
          limits:
            cpu: "5"
@@ -74,7 +97,7 @@ spec:
               path: /spring-jdbc-docker/create-user.html
               port: http
               scheme: HTTP
-            initialDelaySeconds: 120
+            initialDelaySeconds: 15
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 3
@@ -84,7 +107,7 @@ spec:
               path: /spring-jdbc-docker/create-user.html
               port: http
               scheme: HTTP
-            initialDelaySeconds: 120
+            initialDelaySeconds: 15
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 16 
@@ -105,19 +128,3 @@ spec:
           name: log-config  
 status: {}
 
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: log-config
-data:
-  logging.properties: |-
-    handlers=java.util.logging.FileHandler
-    level= OFF
-    java.util.logging.FileHandler.pattern=%t/jdbc%u.log
-    java.util.logging.FileHandler.limit=500000
-    java.util.logging.FileHandler.count=20
-    java.util.logging.FileHandler.formatter=java.util.logging.SimpleFormatter
-    java.util.logging.FileHandler.level=FINEST
-    #java.util.logging.ConsoleHandler.level=FINEST
-    com.microsoft.sqlserver.jdbc.level=FINEST

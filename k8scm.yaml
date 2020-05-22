@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: log-config
+data:
+  logging.properties: |-
+    handlers=java.util.logging.FileHandler
+    level= OFF
+    java.util.logging.FileHandler.pattern=%t/jdbc%u.log
+    java.util.logging.FileHandler.limit=500000
+    java.util.logging.FileHandler.count=20
+    java.util.logging.FileHandler.formatter=java.util.logging.SimpleFormatter
+    java.util.logging.FileHandler.level=FINEST
+    #java.util.logging.ConsoleHandler.level=FINEST
+    com.microsoft.sqlserver.jdbc.level=FINEST

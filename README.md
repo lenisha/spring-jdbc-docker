@@ -36,6 +36,9 @@ export JAVA_OPTS="-DSQL_URL='$SQL_URL' -DSQL_USER=$SQL_USER -DSQL_PASSWORD=$SQL_
 
 ```
 kubectl create secret generic sqlpass --from-literal=SQL_PASS=xxxx
+
+kubectl create secret generic appdynamicspass --from-literal=APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=XXXX
+
 kubectl apply -f 
 ```
 
@@ -60,6 +63,16 @@ az container create -g jogardn-aks -n loadtestspringpost --location westus --ima
 az container logs -g jogardn-aks -n loadtestspringpost
 az container delete -g jogardn-aks -n loadtestspringpost
 ```
+
+### Artillery Load test
+
+```
+npm install -g artillery
+artillery quick --count 10 -n 20 http://51.143.109.195/spring-jdbc-docker/users100.html
+```
+
+
+### Results
 
 With only one pod in replicaset Tomcat starts to queue up pretty quickly
 ```
