@@ -47,14 +47,16 @@ public class FaultyController {
             logger.info("INFO - FaultyController Exception caught " + ex.getMessage());
             model.addAttribute("error", ex.getMessage());
             ex.printStackTrace();
-        } finally {
+        } 
+        /* finally {
+            //logger.info("INFO - FaultyController CLOSING everything " );
             try {
                 if ( stmt != null) stmt.close();
                 if ( conn != null ) conn.close();
             } catch (Exception exf) {
                 logger.info("INFO - FaultyController Exception caught in close " + exf.getMessage());
             }
-        }
+        }*/
 
         
         
