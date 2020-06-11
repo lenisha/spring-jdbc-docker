@@ -3,6 +3,8 @@ FROM frolvlad/alpine-glibc
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
+#RUN ZULU_ARCH=zulu8.46.0.19-ca-jdk8.0.252-linux_x64.tar.gz && \
+
 RUN ZULU_ARCH=zulu8.21.0.1-jdk8.0.131-linux_x64.tar.gz && \
 	INSTALL_DIR=/usr/lib/jvm && \
 	BIN_DIR=/usr/bin && \
@@ -55,12 +57,14 @@ RUN apk del curl && \
 
 # install Application
 EXPOSE 8080
-
+# Tomcat Config
 COPY config/startup.sh /opt/startup.sh
 COPY target/spring-jdbc-docker/WEB-INF/lib/mssql-jdbc-7.4.1.jre8.jar /opt/apache-tomcat-7.0.59/lib/mssql-jdbc-7.4.1.jre8.jar
 ADD  config/tomcat-users.xml config/server.xml $CATALINA_HOME/conf/
 
+# Application
+RUN mkdir /opt/apache-tomcat-7.0.59/webapps/spring-jdbc-docker
 
-ADD target/spring-jdbc-docker.war /opt/apache-tomcat-7.0.59/webapps/
+ADD target/spring-jdbc-docker/ /opt/apache-tomcat-7.0.59/webapps/spring-jdbc-docker/
 
 ENTRYPOINT /opt/startup.sh

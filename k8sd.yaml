@@ -97,7 +97,7 @@ spec:
               path: /spring-jdbc-docker/create-user.html
               port: http
               scheme: HTTP
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 3
@@ -107,16 +107,16 @@ spec:
               path: /spring-jdbc-docker/create-user.html
               port: http
               scheme: HTTP
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 16 
         volumeMounts:
         - mountPath: "/mnt/azure"
           name: azure    
-        #- mountPath: "/opt/apache-tomcat-7.0.59/webapps/spring-jdbc-docker/WEB-INF/classes/logging.properties"
-        #  name: log-config
-        #  subpath: logging.properties  
+        - mountPath: "/opt/apache-tomcat-7.0.59/webapps/spring-jdbc-docker/WEB-INF/classes/logging.properties"
+          name: log-config
+          subPath: logging.properties  
       volumes:
       - name: azure #volume for jdbc logs
         azureFile:

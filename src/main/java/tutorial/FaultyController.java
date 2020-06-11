@@ -42,24 +42,15 @@ public class FaultyController {
             stmt = conn.prepareStatement("SELECT 1");
             stmt.executeQuery();
              
-            throw new RuntimeException("Fail me - do not close connection");
+            
         } catch (SQLException ex) {
             logger.info("INFO - FaultyController Exception caught " + ex.getMessage());
             model.addAttribute("error", ex.getMessage());
             ex.printStackTrace();
+            throw new RuntimeException(ex);
         } 
-        /* finally {
-            //logger.info("INFO - FaultyController CLOSING everything " );
-            try {
-                if ( stmt != null) stmt.close();
-                if ( conn != null ) conn.close();
-            } catch (Exception exf) {
-                logger.info("INFO - FaultyController Exception caught in close " + exf.getMessage());
-            }
-        }*/
-
         
-        
+        model.addAttribute("error", "fault");
         return "fault";
     }
 }
