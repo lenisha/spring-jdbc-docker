@@ -12,4 +12,9 @@ data:
     java.util.logging.FileHandler.formatter=java.util.logging.SimpleFormatter
     java.util.logging.FileHandler.level=FINEST
     #java.util.logging.ConsoleHandler.level=FINEST
-    com.microsoft.sqlserver.jdbc.level=FINEST
+    #com.microsoft.sqlserver.jdbc.level=FINEST
+    com.microsoft.sqlserver.jdbc.Connection.level=FINEST
+    com.microsoft.sqlserver.jdbc.Driver.level=FINEST
+    com.microsoft.sqlserver.jdbc.internals.SQLServerConnection=FINEST
+    com.microsoft.sqlserver.jdbc.internals.SQLServerDataSource=FINEST 
+    com.microsoft.sqlserver.jdbc.internals.SQLServerException=FINEST 

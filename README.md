@@ -34,13 +34,15 @@ export JAVA_OPTS="-DSQL_URL='$SQL_URL' -DSQL_USER=$SQL_USER -DSQL_PASSWORD=$SQL_
 
 # K8S
 
+- Create Secrets for SQL and AppDynamics and ConfigMap for `logging.properties` for JDBC logs
 ```
 kubectl create secret generic sqlpass --from-literal=SQL_PASS=xxxx
 
 kubectl create secret generic appdynamicspass --from-literal=APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY=XXXX
 
-kubectl apply -f 
+kubectl apply -f ./
 ```
+
 
 ```
 curl http://51.143.109.195/spring-jdbc-docker/users.html
