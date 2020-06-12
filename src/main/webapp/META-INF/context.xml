@@ -7,12 +7,12 @@
 			url="${SQL_URL}"
 			username="${SQL_USER}"
 			password="${SQL_PASSWORD}" 
-			validationQuery="SELECT 1"  validationQueryTimeout="50"
+			validationQuery="SELECT 1"  validationQueryTimeout="5"
 			testOnBorrow="true" testWhileIdle="false" testOnReturn="false"
 			initSQL="SET NOCOUNT OFF"
 			removeAbandoned="true" removeAbandonedTimeout="3600"
-			timeBetweenEvictionRunsMillis="60000" minEvictableIdleTimeMillis="300000"
-			initialSize="1" minIdle="10" maxActive="5000" maxIdle="100" maxWait="30000"		/>
+			timeBetweenEvictionRunsMillis="60000" minEvictableIdleTimeMillis="45000"
+			initialSize="1" minIdle="0" maxActive="5000" maxIdle="100" maxWait="30000"		/>
 </Context>
 
 <!--loginTimeout="30000" queryTimeout="120000" -->

@@ -20,6 +20,7 @@ spec:
       containers:
       - image: lenisha/spring-jdbc-docker:8u252
         name: spring-jdbc-docker
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           name: http
@@ -60,7 +61,7 @@ spec:
                    -Djava.net.preferIPv4Stack=true -Djavax.xml.soap.SOAPFactory=org.apache.axis.soap.SOAPFactoryImpl 
                    -Djavax.xml.soap.MessageFactory=org.apache.axis.soap.MessageFactoryImpl -Dfile.encoding=UTF-8
           - name: JAVA_OPTS # CMSClassUnloadingEnabled -Djava.io.tmpdir=${CATALINA_BASE}/temp
-            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD} -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+            value: -DSQL_URL=${SQL_URL} -DSQL_USER=${SQL_USER} -DSQL_PASSWORD=${SQL_PASSWORD} -DCATALINA_TMPDIR=/mnt/azure/${MY_POD_NAME}  -Djava.awt.headless=true -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
           - name: APM
             value: -javaagent:/opt/tomcat/appDynamics/javaagent.jar -Dappdynamics.agent.reuse.nodeName.prefix=Tomcat -Dappdynamics.agent.reuse.nodeName=true
           - name: APPDYNAMICS_CONTROLLER_HOST_NAME
@@ -97,7 +98,7 @@ spec:
               path: /spring-jdbc-docker/create-user.html
               port: http
               scheme: HTTP
-            initialDelaySeconds: 60
+            initialDelaySeconds: 20
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 3
@@ -107,7 +108,7 @@ spec:
               path: /spring-jdbc-docker/create-user.html
               port: http
               scheme: HTTP
-            initialDelaySeconds: 60
+            initialDelaySeconds: 20
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 16 

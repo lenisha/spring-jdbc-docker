@@ -54,7 +54,9 @@ public class UsersController {
 
             ArrayList<User> userList = new ArrayList<User>();
             conn = dataSource.getConnection();
+            
             stmt = conn.prepareStatement("SELECT TOP 100 * from usr");
+            stmt.setQueryTimeout(120);
             rs = stmt.executeQuery();
 
             while(rs.next()) {
